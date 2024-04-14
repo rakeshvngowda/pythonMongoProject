@@ -13,11 +13,6 @@ class MongoConnect:
         except Exception as e:
             print(f"{e}")
 
-    def getResults(self,columnName,query={},values={},limit=5):
-        column = self.database[columnName]
-        results = list(column.find(query,values).limit(limit))
-
-        return json.dumps(results,default=json_util.default)
 
 class GetAndModifyMongoResults:
     def __init__(self,database,columnName,query={},fields={}):
@@ -28,3 +23,7 @@ class GetAndModifyMongoResults:
     def getResults(self):
         results = list(self.columnName.find(self.query,self.fields).limit(5))
         return results
+    
+    def insertresults(self,body):
+        self.columnName.insert_one(body)
+        return
