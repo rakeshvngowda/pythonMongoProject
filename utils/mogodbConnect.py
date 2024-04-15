@@ -3,10 +3,12 @@ import json
 import os
 from bson import json_util
 # from pymongo.errors import ConnectionError
+
+
 class MongoConnect:
-    def __init__(self,databaseName):
+    def __init__(self, databaseName):
         try:
-            self.databaseName= databaseName
+            self.databaseName = databaseName
             self.myclient = pymongo.MongoClient(os.getenv('MONGODB_URL'))
             self.database = self.myclient[databaseName]
             print('connected to database')
@@ -15,15 +17,22 @@ class MongoConnect:
 
 
 class GetAndModifyMongoResults:
-    def __init__(self,database,columnName,query={},fields={}):
+    def __init__(self, database, columnName):
         self.columnName = database[columnName]
-        self.query = query
-        self.fields = fields
-    
+
     def getResults(self):
-        results = list(self.columnName.find(self.query,self.fields).limit(5))
+        results = list(self.columnName.find({}, {"_id": 0}).limit(5))
         return results
     
-    def insertresults(self,body):
-        self.columnName.insert_one(body)
+    def getSingleAccount(self,account_id):
+        results = self.columnName.find_one({'account_id':account_id},{"_id":0})
+        return results
+
+    def insertresults(self, body):
+        result = self.columnName.insert_one(body)
+        return result
+
+    def deleteResult(self, account_id):
+        result = self.columnName.delete_one({'account_id': account_id})
+        print(result)
         return
